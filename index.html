@@ -727,6 +727,8 @@
             body {
                 padding: 0;
                 align-items: flex-start;
+                overflow-y: auto;
+                overflow-x: hidden;
             }
             
             .frame {
@@ -735,6 +737,7 @@
                 min-height: 100dvh;
                 display: flex;
                 flex-direction: column;
+                overflow: visible;
             }
             
             /* Clean mobile header - sticky */
@@ -1087,7 +1090,6 @@
             main {
                 display: block;
                 padding: 16px 20px;
-                overflow-y: auto;
                 flex: 1;
                 grid-template-columns: none;
                 transition: opacity 0.2s ease;
