@@ -1,0 +1,2961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Tipping Point Calculator — Carbon Capital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F5F5F5;
+            --text: #111;
+            --text-muted: #666;
+            --border: #222;
+            --border-default: #222;
+            --border-filtered: #CCC;
+            --temple: #CC3333;
+            --tool: #2266DD;
+            --ritual: #22A855;
+            
+            --designer: #0088FF;
+            --thought-leader: #FF0088;
+            --city: #FF8800;
+            --tech: #8800FF;
+            --media: #00BBBB;
+            --artist: #DDAA00;
+            --student: #66BB22;
+            --activist: #EE4444;
+            --researcher: #6688AA;
+            --business: #44AA88;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .frame {
+            width: 100%;
+            max-width: 1600px;
+            aspect-ratio: 16 / 9;
+            background: var(--bg);
+            display: grid;
+            grid-template-rows: auto auto 1fr auto;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Tipping Point Banner */
+        .tipping-banner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.94);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .tipping-banner.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tipping-banner h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 72px;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .tipping-banner .subhead {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .tipping-banner .wrapped-summary {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            margin-top: 32px;
+            text-align: center;
+            max-width: 650px;
+            line-height: 1.8;
+        }
+
+        .tipping-banner .wrapped-summary .who-tag {
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .tipping-banner .wrapped-summary .metric-good {
+            color: #00DD66;
+            font-weight: 600;
+        }
+
+        .tipping-banner .wrapped-summary .metric-bad {
+            color: #EE4444;
+            font-weight: 600;
+        }
+
+        .tipping-banner .wrapped-summary .metric-warn {
+            color: #DDAA00;
+            font-weight: 600;
+        }
+
+        .tipping-banner .wrapped-summary .type-temple {
+            color: var(--temple);
+            font-weight: 600;
+        }
+
+        .tipping-banner .wrapped-summary .type-tool {
+            color: var(--tool);
+            font-weight: 600;
+        }
+
+        .tipping-banner .wrapped-summary .type-ritual {
+            color: var(--ritual);
+            font-weight: 600;
+        }
+
+        .tipping-banner button {
+            margin-top: 32px;
+            padding: 12px 32px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: transparent;
+            border: 2px solid #FFFFFF;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tipping-banner button:hover {
+            background: #FFFFFF;
+            color: #000;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .title-block h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .title-block p {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Metrics */
+        .metrics-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .metric {
+            text-align: right;
+        }
+
+        .metric-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .metric-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        .metric-value.positive { color: #0A8A4A; }
+        .metric-value.negative { color: #B82020; }
+        .metric-value.neutral { color: var(--text); }
+        .metric-value.warning { color: #CC7700; }
+
+        .metric-sub {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 8px;
+            color: var(--text-muted);
+        }
+
+        /* Tipping Point */
+        .tipping-point {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            margin-left: 14px;
+            padding-left: 14px;
+            border-left: 1px solid #CCC;
+        }
+
+        .tipping-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .tipping-ring {
+            width: 52px;
+            height: 52px;
+            position: relative;
+        }
+
+        .tipping-ring svg {
+            transform: rotate(-90deg);
+            width: 52px;
+            height: 52px;
+        }
+
+        .tipping-ring circle {
+            fill: none;
+            stroke-width: 5;
+        }
+
+        .tipping-ring .bg { stroke: #DDD; }
+        .tipping-ring .progress {
+            stroke: #00DD66;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.6s ease;
+        }
+
+        .tipping-ring.reached .progress {
+            filter: drop-shadow(0 0 6px rgba(0,221,102,0.6));
+        }
+
+        .tipping-percent {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Reset Button */
+        .reset-btn {
+            margin-left: 14px;
+            padding: 4px 12px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 9px;
+            text-transform: uppercase;
+            background: transparent;
+            border: 1px solid #CC3333;
+            color: #CC3333;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border-radius: 3px;
+        }
+
+        .reset-btn:hover {
+            background: #CC3333;
+            color: #FFF;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 24px;
+            border-bottom: 1px solid #DDD;
+            background: #FFF;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-group-center {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text);
+            margin-right: 6px;
+        }
+
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border: 1px solid #DDD;
+            background: #FFF;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .filter-btn:hover {
+            background: #F5F5F5;
+        }
+
+        .filter-btn.active {
+            background: #111;
+            color: #FFF;
+            border-color: #111;
+        }
+
+        .filter-btn .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .filter-btn.active .dot {
+            box-shadow: 0 0 4px currentColor;
+        }
+
+        .dot.designer { background: var(--designer); }
+        .dot.thought-leader { background: var(--thought-leader); }
+        .dot.city { background: var(--city); }
+        .dot.tech { background: var(--tech); }
+        .dot.media { background: var(--media); }
+        .dot.artist { background: var(--artist); }
+        .dot.student { background: var(--student); }
+        .dot.activist { background: var(--activist); }
+        .dot.researcher { background: var(--researcher); }
+        .dot.business { background: var(--business); }
+
+        .filter-btn.all-btn {
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+        }
+
+        .status-dot.existing { background: #888; }
+        .status-dot.new { background: #00DD66; }
+
+        .type-legend {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-left: 14px;
+            padding-left: 14px;
+            border-left: 1px solid #DDD;
+        }
+
+        .type-tag {
+            font-family: 'Oswald', sans-serif;
+            font-size: 9px;
+            font-weight: 500;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            color: #FFF;
+            border-radius: 2px;
+        }
+
+        .type-tag.temple { background: var(--temple); }
+        .type-tag.tool { background: var(--tool); }
+        .type-tag.ritual { background: var(--ritual); }
+
+        /* Main */
+        main {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            padding: 10px 24px;
+            overflow: hidden;
+        }
+
+        .category {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            overflow-x: visible;
+        }
+
+        .category::-webkit-scrollbar { display: none; }
+        .category { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .category-header {
+            font-family: 'Oswald', sans-serif;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text);
+            padding: 5px 0;
+            border-bottom: 2px solid var(--border);
+            text-align: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 1;
+        }
+
+        .switches {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 8px 4px 4px 4px;
+        }
+
+        /* Card Button */
+        .card {
+            aspect-ratio: 1;
+            background: #FFF;
+            border: 2px solid var(--border-default);
+            padding: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow: visible;
+        }
+
+        .card:hover {
+            background: #F8F8F8;
+        }
+
+        .card.filtered {
+            opacity: 0.25;
+            filter: grayscale(100%);
+            pointer-events: none;
+            border-color: var(--border-filtered);
+        }
+
+        /* Active state - gradient border for multiple WHOs */
+        .card.active {
+            background: #111;
+        }
+
+        .card.active .card-title { color: #FFF; }
+        .card.active .card-desc { color: #999; }
+
+        .card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            line-height: 1.15;
+            color: var(--text);
+            transition: color 0.2s ease;
+            word-spacing: 100vw;
+        }
+
+        .card-desc {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.01em;
+            transition: color 0.2s ease;
+        }
+
+        /* WHO dots on card */
+        .who-dots {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            display: flex;
+            gap: 2px;
+        }
+
+        .who-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+
+        .card.active .who-dot {
+            opacity: 1;
+            box-shadow: 0 0 4px currentColor;
+        }
+
+        .who-dot.designer { background: var(--designer); }
+        .who-dot.thought-leader { background: var(--thought-leader); }
+        .who-dot.city { background: var(--city); }
+        .who-dot.tech { background: var(--tech); }
+        .who-dot.media { background: var(--media); }
+        .who-dot.artist { background: var(--artist); }
+        .who-dot.student { background: var(--student); }
+        .who-dot.activist { background: var(--activist); }
+        .who-dot.researcher { background: var(--researcher); }
+        .who-dot.business { background: var(--business); }
+
+        /* Tags - sticker style overlapping top-right corner */
+        .tags {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            z-index: 2;
+        }
+
+        .tag {
+            font-family: 'Oswald', sans-serif;
+            font-size: 6px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 2px 5px;
+            color: #FFF;
+            border-radius: 2px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .tag.temple {
+            background: var(--temple);
+            transform: rotate(8deg) translate(2px, 0);
+        }
+
+        .tag.tool {
+            background: var(--tool);
+            transform: rotate(-5deg) translate(4px, 0);
+        }
+
+        .tag.ritual {
+            background: var(--ritual);
+            transform: rotate(4deg) translate(1px, 0);
+        }
+
+        .tags .tag:nth-child(2) {
+            transform: rotate(-6deg) translate(0, 0);
+        }
+
+        .tags .tag:nth-child(3) {
+            transform: rotate(5deg) translate(3px, 0);
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 5px;
+            text-transform: uppercase;
+            padding: 1px 3px;
+            border-radius: 2px;
+            letter-spacing: 0.02em;
+        }
+
+        .status-indicator.existing {
+            background: #E0E0E0;
+            color: #666;
+        }
+
+        .status-indicator.new {
+            background: #D4FFDD;
+            color: #228833;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: fixed;
+            background: #FFF;
+            border: 2px solid var(--border);
+            padding: 10px;
+            width: 240px;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .tooltip.visible { opacity: 1; }
+
+        .tooltip-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tooltip-who {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7px;
+            color: var(--text-muted);
+            margin: 3px 0 6px 0;
+            text-transform: uppercase;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .tooltip-who-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .tooltip-who-item {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: #F0F0F0;
+            padding: 2px 5px;
+            border-radius: 2px;
+        }
+
+        .tooltip-desc {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 8px;
+            color: var(--text-muted);
+            line-height: 1.45;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px 8px;
+            padding-top: 6px;
+            border-top: 1px solid #DDD;
+        }
+
+        .tooltip-metric {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7px;
+        }
+
+        .tooltip-metric-name { color: var(--text-muted); }
+        .tooltip-metric-value { font-weight: 500; }
+        .tooltip-metric-value.pos { color: #0A8A4A; }
+        .tooltip-metric-value.neg { color: #B82020; }
+
+        /* Footer */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 24px;
+            border-top: 2px solid var(--border);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 8px;
+            color: var(--text-muted);
+        }
+
+        .quote {
+            font-family: 'Roboto Mono', sans-serif;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* ========== MOBILE / PORTRAIT ONLY ========== */
+        @media (orientation: portrait) {
+            body {
+                padding: 0;
+                align-items: flex-start;
+            }
+            
+            .frame {
+                aspect-ratio: unset;
+                min-height: 100vh;
+                min-height: 100dvh;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            /* Clean mobile header */
+            header {
+                padding: 20px;
+                flex-direction: column;
+                gap: 14px;
+                border-bottom: 1px solid #DDD;
+            }
+            
+            .title-block {
+                text-align: center;
+            }
+            
+            .title-block h1 {
+                font-size: 28px;
+            }
+            
+            .title-block p {
+                font-size: 12px;
+                margin-top: 4px;
+            }
+            
+            /* Compact 3-column metrics: Carbon | Tipping | Believers */
+            .metrics-bar {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                align-items: center;
+                gap: 16px;
+                width: 100%;
+            }
+            
+            .metric {
+                text-align: center;
+            }
+            
+            .metric-label {
+                font-size: 9px;
+            }
+            
+            .metric-value {
+                font-size: 26px;
+            }
+            
+            .metric-sub {
+                font-size: 8px;
+            }
+            
+            /* Hide displacement, joy, burden in main metrics bar */
+            .metric:nth-child(3),
+            .metric:nth-child(4),
+            .metric:nth-child(5) {
+                display: none;
+            }
+            
+            /* Tipping point in center */
+            .tipping-point {
+                border-left: none;
+                margin-left: 0;
+                padding-left: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            
+            .tipping-label {
+                font-size: 9px;
+            }
+            
+            .tipping-ring {
+                width: 56px;
+                height: 56px;
+            }
+            
+            .tipping-percent {
+                font-size: 16px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            
+            /* Expandable secondary metrics */
+            .mobile-metrics-expand {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .metrics-expand-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 12px 20px;
+                font-family: 'Roboto Mono', monospace;
+                font-size: 11px;
+                color: #333;
+                background: #F0F0F0;
+                border: 1px solid #DDD;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 12px;
+                text-transform: uppercase;
+            }
+            
+            .metrics-expand-toggle .caret {
+                transition: transform 0.2s ease;
+                font-size: 10px;
+            }
+            
+            .metrics-expand-toggle.open .caret {
+                transform: rotate(180deg);
+            }
+            
+            .secondary-metrics {
+                display: none;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                padding-top: 12px;
+            }
+            
+            .secondary-metrics.show {
+                display: grid;
+            }
+            
+            .secondary-metric {
+                text-align: center;
+                padding: 10px;
+                background: #F8F8F8;
+                border-radius: 4px;
+            }
+            
+            .secondary-metric-label {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 9px;
+                text-transform: uppercase;
+                color: var(--text-muted);
+            }
+            
+            .secondary-metric-value {
+                font-family: 'Oswald', sans-serif;
+                font-size: 22px;
+                font-weight: 500;
+            }
+            
+            .secondary-metric-sub {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 8px;
+                color: var(--text-muted);
+            }
+            
+            /* Mobile clear selection button */
+            .mobile-clear-btn {
+                display: none;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                padding: 12px 20px;
+                font-family: 'Roboto Mono', monospace;
+                font-size: 11px;
+                color: #CC3333;
+                background: #FFF;
+                border: 1px solid #CC3333;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 8px;
+                text-transform: uppercase;
+            }
+            
+            .mobile-clear-btn.show {
+                display: flex;
+            }
+            
+            .mobile-clear-btn:active {
+                background: #FFF5F5;
+            }
+            
+            /* Hide desktop filter bar */
+            .filter-bar {
+                display: none !important;
+            }
+            
+            /* Mobile filter toggle button */
+            .mobile-filter-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 20px;
+                background: #FAFAFA;
+                border-bottom: 1px solid #DDD;
+                cursor: pointer;
+            }
+            
+            .mobile-filter-toggle-left {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .mobile-filter-toggle-label {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 12px;
+                text-transform: uppercase;
+                color: var(--text-muted);
+            }
+            
+            .mobile-filter-toggle-active {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 11px;
+                color: #111;
+                background: #FFF;
+                padding: 4px 10px;
+                border: 1px solid #DDD;
+                border-radius: 2px;
+            }
+            
+            .mobile-filter-toggle-caret {
+                font-size: 14px;
+                color: var(--text-muted);
+            }
+            
+            /* Mobile Filter Overlay */
+            .mobile-filter-overlay {
+                display: none;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #FFF;
+                border-top: 3px solid #111;
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+                z-index: 200;
+                max-height: 70vh;
+                overflow-y: auto;
+                padding: 24px;
+                animation: slideUp 0.25s ease;
+            }
+            
+            .mobile-filter-overlay.show {
+                display: block;
+            }
+            
+            .filter-overlay-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            
+            .filter-overlay-title {
+                font-family: 'Oswald', sans-serif;
+                font-size: 22px;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+            
+            .filter-overlay-close {
+                font-size: 28px;
+                cursor: pointer;
+                color: #666;
+                line-height: 1;
+            }
+            
+            .filter-overlay-section {
+                margin-bottom: 24px;
+            }
+            
+            .filter-overlay-label {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 12px;
+                text-transform: uppercase;
+                color: var(--text-muted);
+                margin-bottom: 12px;
+            }
+            
+            .filter-overlay-options {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .filter-overlay-btn {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 13px;
+                padding: 10px 16px;
+                border: 1px solid #DDD;
+                background: #FFF;
+                cursor: pointer;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .filter-overlay-btn.active {
+                background: #111;
+                color: #FFF;
+                border-color: #111;
+            }
+            
+            .filter-overlay-btn .dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+            
+            .filter-overlay-actions {
+                display: flex;
+                gap: 12px;
+                margin-top: 24px;
+                padding-top: 20px;
+                border-top: 1px solid #EEE;
+            }
+            
+            .filter-overlay-action {
+                flex: 1;
+                padding: 14px;
+                font-family: 'Oswald', sans-serif;
+                font-size: 15px;
+                text-transform: uppercase;
+                border: 2px solid;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            
+            .filter-overlay-clear {
+                background: #FFF;
+                border-color: #CCC;
+                color: #666;
+            }
+            
+            .filter-overlay-apply {
+                background: #111;
+                border-color: #111;
+                color: #FFF;
+            }
+            
+            /* Hide view toggle */
+            .mobile-view-toggle {
+                display: none !important;
+            }
+            
+            /* Single scrollable main */
+            main {
+                display: block;
+                padding: 16px 20px;
+                overflow-y: auto;
+                flex: 1;
+                grid-template-columns: none;
+                transition: opacity 0.2s ease;
+            }
+            
+            .frame.overlay-open main {
+                opacity: 0.5;
+                pointer-events: none;
+            }
+            
+            .frame.overlay-open header,
+            .frame.overlay-open .mobile-filter-toggle,
+            .frame.overlay-open .mobile-selection-bar,
+            .frame.overlay-open footer {
+                opacity: 0.5;
+                pointer-events: none;
+            }
+            
+            .category {
+                display: block;
+                margin-bottom: 24px;
+                overflow: visible;
+            }
+            
+            .category-header {
+                position: relative;
+                margin-bottom: 12px;
+                font-size: 14px;
+            }
+            
+            /* Grid view */
+            .switches {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+                padding: 0;
+            }
+            
+            .card {
+                padding: 12px;
+                aspect-ratio: 1;
+            }
+            
+            .card-title {
+                font-size: 12px;
+            }
+            
+            .card-desc {
+                font-size: 9px;
+            }
+            
+            /* Filtered cards - greyed out */
+            .card.filtered {
+                opacity: 0.3;
+                pointer-events: none;
+            }
+            
+            /* Hide expandable info in grid - we use overlay now */
+            .card-expanded-info {
+                display: none !important;
+            }
+            
+            /* Mobile Detail Overlay */
+            .mobile-detail-overlay {
+                display: none;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #FFF;
+                border-top: 3px solid #111;
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+                z-index: 200;
+                max-height: 75vh;
+                overflow-y: auto;
+                padding: 24px;
+                animation: slideUp 0.25s ease;
+            }
+            
+            .mobile-detail-overlay.show {
+                display: block;
+            }
+            
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            .detail-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 14px;
+            }
+            
+            .detail-title {
+                font-family: 'Oswald', sans-serif;
+                font-size: 26px;
+                font-weight: 600;
+                text-transform: uppercase;
+                line-height: 1.2;
+            }
+            
+            .detail-tags {
+                display: flex;
+                gap: 8px;
+            }
+            
+            .detail-tag {
+                font-family: 'Oswald', sans-serif;
+                font-size: 12px;
+                font-weight: 500;
+                text-transform: uppercase;
+                padding: 5px 12px;
+                color: #FFF;
+                border-radius: 2px;
+            }
+            
+            .detail-tag.temple { background: var(--temple); }
+            .detail-tag.tool { background: var(--tool); }
+            .detail-tag.ritual { background: var(--ritual); }
+            
+            .detail-status {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 11px;
+                text-transform: uppercase;
+                padding: 4px 10px;
+                border-radius: 2px;
+                margin-top: 10px;
+                display: inline-block;
+            }
+            
+            .detail-status.existing {
+                background: #EEE;
+                color: #666;
+            }
+            
+            .detail-status.new {
+                background: #D4FFDD;
+                color: #228833;
+            }
+            
+            .detail-desc {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 14px;
+                color: var(--text-muted);
+                line-height: 1.6;
+                margin: 18px 0;
+                padding: 14px;
+                background: #F8F8F8;
+                border-radius: 4px;
+            }
+            
+            .detail-metrics {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 18px;
+            }
+            
+            .detail-metric {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 14px;
+                background: #F5F5F5;
+                border-radius: 4px;
+                font-family: 'Roboto Mono', monospace;
+                font-size: 13px;
+            }
+            
+            .detail-metric-name {
+                color: var(--text-muted);
+            }
+            
+            .detail-metric-value {
+                font-weight: 600;
+            }
+            
+            .detail-metric-value.pos { color: #0A8A4A; }
+            .detail-metric-value.neg { color: #B82020; }
+            
+            .detail-who {
+                margin-bottom: 24px;
+            }
+            
+            .detail-who-label {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 11px;
+                text-transform: uppercase;
+                color: var(--text-muted);
+                margin-bottom: 10px;
+            }
+            
+            .detail-who-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .detail-who-tag {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                background: #F0F0F0;
+                padding: 8px 14px;
+                border-radius: 4px;
+                font-family: 'Roboto Mono', monospace;
+                font-size: 13px;
+            }
+            
+            .detail-who-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+            
+            .detail-buttons {
+                display: flex;
+                gap: 14px;
+                margin-top: 20px;
+            }
+            
+            .detail-link {
+                display: block;
+                margin-top: 14px;
+                padding: 12px 14px;
+                background: #F0FFF4;
+                border: 1px solid #22A855;
+                border-radius: 4px;
+                font-family: 'Roboto Mono', monospace;
+                font-size: 12px;
+                color: #1a7a3a;
+            }
+            
+            .detail-link a {
+                color: #22A855;
+                text-decoration: underline;
+                font-weight: 600;
+            }
+            
+            .detail-btn {
+                flex: 1;
+                padding: 16px 24px;
+                font-family: 'Oswald', sans-serif;
+                font-size: 16px;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                border: 2px solid;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+            
+            .detail-btn-close {
+                background: #FFF;
+                border-color: #CCC;
+                color: #666;
+            }
+            
+            .detail-btn-add {
+                background: #111;
+                border-color: #111;
+                color: #FFF;
+            }
+            
+            .detail-btn-remove {
+                background: #FFF;
+                border-color: #CC3333;
+                color: #CC3333;
+            }
+            
+            footer {
+                padding: 14px 20px;
+                flex-direction: column;
+                gap: 6px;
+                text-align: center;
+                transition: opacity 0.2s ease;
+            }
+            
+            .quote {
+                font-size: 11px;
+            }
+            
+            /* Mobile selection bar - sticky at bottom */
+            .mobile-selection-bar {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 12px 20px;
+                background: #FFF;
+                border-top: 1px solid #DDD;
+                min-height: 48px;
+                align-items: center;
+                transition: opacity 0.2s ease;
+                position: sticky;
+                bottom: 0;
+                z-index: 50;
+            }
+            
+            .mobile-selection-bar:empty::before {
+                content: 'Tap cards to build your coalition';
+                font-family: 'Roboto Mono', monospace;
+                font-size: 11px;
+                color: var(--text-muted);
+            }
+            
+            .selection-chip {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 10px;
+                padding: 5px 10px;
+                background: #111;
+                color: #FFF;
+                border-radius: 2px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            
+            .selection-chip .remove {
+                cursor: pointer;
+                opacity: 0.7;
+                font-size: 14px;
+            }
+            
+            /* Hide tooltip on mobile */
+            .tooltip {
+                display: none !important;
+            }
+            
+            /* Banner mobile */
+            .tipping-banner h2 {
+                font-size: 36px;
+            }
+            
+            .tipping-banner .subhead {
+                font-size: 16px;
+            }
+            
+            .tipping-banner .wrapped-summary {
+                font-size: 13px;
+                padding: 0 24px;
+            }
+        }
+        
+        /* Hide mobile elements on landscape */
+        @media (orientation: landscape) {
+            .mobile-selection-bar,
+            .mobile-view-toggle,
+            .mobile-detail-overlay,
+            .mobile-filter-toggle,
+            .mobile-filter-overlay,
+            .mobile-metrics-expand {
+                display: none !important;
+            }
+            
+            .card-expanded-info {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="frame">
+        <!-- Tipping Point Banner -->
+        <div class="tipping-banner" id="tipping-banner">
+            <h2>Tipping Point Reached</h2>
+            <div class="subhead">A Carbon-Negative Future is Possible</div>
+            <div class="wrapped-summary" id="wrapped-summary"></div>
+            <button id="banner-close">Continue Building</button>
+        </div>
+
+        <header>
+            <div class="title-block">
+                <h1>The Tipping Point Calculator</h1>
+                <p>What combination of actions tips the culture?</p>
+            </div>
+            
+            <div class="metrics-bar">
+                <div class="metric">
+                    <div class="metric-label">Carbon Sequestered</div>
+                    <div class="metric-value neutral" id="m-carbon">0</div>
+                    <div class="metric-sub">tonnes CO₂/yr</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Believers</div>
+                    <div class="metric-value neutral" id="m-believers">0</div>
+                    <div class="metric-sub">converts</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Displacement</div>
+                    <div class="metric-value neutral" id="m-displacement">0</div>
+                    <div class="metric-sub">gentrif. idx</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Joy Factor</div>
+                    <div class="metric-value neutral" id="m-joy">0</div>
+                    <div class="metric-sub">virality</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Burden Shift</div>
+                    <div class="metric-value neutral" id="m-burden">0</div>
+                    <div class="metric-sub">corp→indiv</div>
+                </div>
+
+                <div class="tipping-point">
+                    <div class="tipping-label">Tipping Point</div>
+                    <div class="tipping-ring" id="tipping-ring">
+                        <svg viewBox="0 0 40 40">
+                            <circle class="bg" cx="20" cy="20" r="16"/>
+                            <circle class="progress" cx="20" cy="20" r="16" 
+                                stroke-dasharray="100.5" 
+                                stroke-dashoffset="100.5"
+                                id="tipping-progress"/>
+                        </svg>
+                        <span class="tipping-percent" id="tipping-percent">0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile: Expandable secondary metrics -->
+            <div class="mobile-metrics-expand">
+                <div class="metrics-expand-toggle" id="metrics-expand-toggle">
+                    <span>More Metrics</span>
+                    <span class="caret">▼</span>
+                </div>
+                <div class="secondary-metrics" id="secondary-metrics">
+                    <div class="secondary-metric">
+                        <div class="secondary-metric-label">Displacement</div>
+                        <div class="secondary-metric-value neutral" id="m-displacement-mobile">0</div>
+                        <div class="secondary-metric-sub">gentrif. idx</div>
+                    </div>
+                    <div class="secondary-metric">
+                        <div class="secondary-metric-label">Joy Factor</div>
+                        <div class="secondary-metric-value neutral" id="m-joy-mobile">0</div>
+                        <div class="secondary-metric-sub">virality</div>
+                    </div>
+                    <div class="secondary-metric">
+                        <div class="secondary-metric-label">Burden Shift</div>
+                        <div class="secondary-metric-value neutral" id="m-burden-mobile">0</div>
+                        <div class="secondary-metric-sub">corp→indiv</div>
+                    </div>
+                </div>
+                <button class="mobile-clear-btn" id="mobile-clear-btn">Clear Selection ×</button>
+            </div>
+        </header>
+
+        <div class="filter-bar">
+            <div class="filter-group">
+                <span class="filter-title">Who:</span>
+                <button class="filter-btn all-btn active" data-filter="all" data-type="who">All</button>
+                <button class="filter-btn" data-filter="designer" data-type="who"><span class="dot designer"></span>Designer</button>
+                <button class="filter-btn" data-filter="thought-leader" data-type="who"><span class="dot thought-leader"></span>Thought Leader</button>
+                <button class="filter-btn" data-filter="city" data-type="who"><span class="dot city"></span>City/Infra</button>
+                <button class="filter-btn" data-filter="tech" data-type="who"><span class="dot tech"></span>Tech</button>
+                <button class="filter-btn" data-filter="media" data-type="who"><span class="dot media"></span>Media</button>
+                <button class="filter-btn" data-filter="artist" data-type="who"><span class="dot artist"></span>Artist</button>
+                <button class="filter-btn" data-filter="student" data-type="who"><span class="dot student"></span>Student</button>
+                <button class="filter-btn" data-filter="activist" data-type="who"><span class="dot activist"></span>Activist</button>
+                <button class="filter-btn" data-filter="researcher" data-type="who"><span class="dot researcher"></span>Researcher</button>
+                <button class="filter-btn" data-filter="business" data-type="who"><span class="dot business"></span>Business</button>
+            </div>
+
+            <div class="filter-group-center">
+                <span class="filter-title">Status:</span>
+                <button class="filter-btn all-btn active" data-filter="all" data-type="status">All</button>
+                <button class="filter-btn" data-filter="existing" data-type="status"><span class="status-dot existing"></span>Existing</button>
+                <button class="filter-btn" data-filter="new" data-type="status"><span class="status-dot new"></span>New</button>
+            </div>
+
+            <button class="reset-btn" id="reset-btn">Clear Selection</button>
+        </div>
+
+        <!-- Mobile Only Elements -->
+        <div class="mobile-selection-bar" id="mobile-selection-bar"></div>
+        <div class="mobile-view-toggle" id="mobile-view-toggle">
+            <span>View:</span>
+            <button class="view-toggle-btn active" data-view="grid">Grid</button>
+            <button class="view-toggle-btn" data-view="list">List</button>
+        </div>
+        
+        <!-- Mobile Metrics Expand (inside header via JS) -->
+        
+        <!-- Mobile Filter Toggle -->
+        <div class="mobile-filter-toggle" id="mobile-filter-toggle">
+            <div class="mobile-filter-toggle-left">
+                <span class="mobile-filter-toggle-label">Filters</span>
+                <span class="mobile-filter-toggle-active" id="filter-active-summary">All</span>
+            </div>
+            <span class="mobile-filter-toggle-caret">▼</span>
+        </div>
+        
+        <!-- Mobile Filter Overlay -->
+        <div class="mobile-filter-overlay" id="mobile-filter-overlay">
+            <div class="filter-overlay-header">
+                <span class="filter-overlay-title">Filter Cards</span>
+                <span class="filter-overlay-close" id="filter-overlay-close">×</span>
+            </div>
+            
+            <div class="filter-overlay-section">
+                <div class="filter-overlay-label">Who's Involved</div>
+                <div class="filter-overlay-options" id="mobile-who-filters">
+                    <button class="filter-overlay-btn active" data-filter="all" data-type="who">All</button>
+                    <button class="filter-overlay-btn" data-filter="designer" data-type="who"><span class="dot" style="background:#1E88E5"></span>Designer</button>
+                    <button class="filter-overlay-btn" data-filter="thought" data-type="who"><span class="dot" style="background:#E91E63"></span>Thought Leader</button>
+                    <button class="filter-overlay-btn" data-filter="city" data-type="who"><span class="dot" style="background:#FFC107"></span>City/Infra</button>
+                    <button class="filter-overlay-btn" data-filter="tech" data-type="who"><span class="dot" style="background:#9C27B0"></span>Tech</button>
+                    <button class="filter-overlay-btn" data-filter="media" data-type="who"><span class="dot" style="background:#FF9800"></span>Media</button>
+                    <button class="filter-overlay-btn" data-filter="artist" data-type="who"><span class="dot" style="background:#CDDC39"></span>Artist</button>
+                    <button class="filter-overlay-btn" data-filter="student" data-type="who"><span class="dot" style="background:#4CAF50"></span>Student</button>
+                    <button class="filter-overlay-btn" data-filter="activist" data-type="who"><span class="dot" style="background:#FF5722"></span>Activist</button>
+                    <button class="filter-overlay-btn" data-filter="researcher" data-type="who"><span class="dot" style="background:#00BCD4"></span>Researcher</button>
+                    <button class="filter-overlay-btn" data-filter="business" data-type="who"><span class="dot" style="background:#8BC34A"></span>Business</button>
+                </div>
+            </div>
+            
+            <div class="filter-overlay-section">
+                <div class="filter-overlay-label">Status</div>
+                <div class="filter-overlay-options" id="mobile-status-filters">
+                    <button class="filter-overlay-btn active" data-filter="all" data-type="status">All</button>
+                    <button class="filter-overlay-btn" data-filter="existing" data-type="status"><span class="dot" style="background:#999"></span>Existing</button>
+                    <button class="filter-overlay-btn" data-filter="new" data-type="status"><span class="dot" style="background:#4CAF50"></span>New</button>
+                </div>
+            </div>
+            
+            <div class="filter-overlay-actions">
+                <button class="filter-overlay-action filter-overlay-clear" id="filter-overlay-clear">Clear Filters</button>
+                <button class="filter-overlay-action filter-overlay-apply" id="filter-overlay-apply">Apply</button>
+            </div>
+        </div>
+        
+        <!-- Mobile Detail Overlay -->
+        <div class="mobile-detail-overlay" id="mobile-detail-overlay">
+            <div class="detail-header">
+                <div>
+                    <div class="detail-title" id="detail-title"></div>
+                    <div class="detail-status" id="detail-status"></div>
+                </div>
+                <div class="detail-tags" id="detail-tags"></div>
+            </div>
+            <div class="detail-desc" id="detail-desc"></div>
+            <div class="detail-metrics" id="detail-metrics"></div>
+            <div class="detail-who">
+                <div class="detail-who-label">Who's Involved</div>
+                <div class="detail-who-tags" id="detail-who-tags"></div>
+            </div>
+            <div id="detail-link-container"></div>
+            <div class="detail-buttons">
+                <button class="detail-btn detail-btn-close" id="detail-close">Close</button>
+                <button class="detail-btn detail-btn-add" id="detail-action">Add to Coalition</button>
+            </div>
+        </div>
+
+        <main>
+            <div class="category">
+                <div class="category-header">Physical</div>
+                <div class="switches" id="switches-physical"></div>
+            </div>
+            <div class="category">
+                <div class="category-header">Digital</div>
+                <div class="switches" id="switches-digital"></div>
+            </div>
+            <div class="category">
+                <div class="category-header">Activities</div>
+                <div class="switches" id="switches-activities"></div>
+            </div>
+            <div class="category">
+                <div class="category-header">Policies</div>
+                <div class="switches" id="switches-policies"></div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="quote">Calibrated for NYC. Your city's tipping point may vary.</div>
+            <div>GSAPP / VITAL: David Benjamin / Kelsey Wang & Lorennah Granfors</div>
+        </footer>
+    </div>
+
+    <div class="tooltip" id="tooltip">
+        <div class="tooltip-title" id="tooltip-title"></div>
+        <div class="tooltip-who" id="tooltip-who"></div>
+        <div class="tooltip-desc" id="tooltip-desc"></div>
+        <div class="tooltip-metrics" id="tooltip-metrics"></div>
+    </div>
+
+    <script>
+        const WHO_LABELS = {
+            designer: 'Designer',
+            'thought-leader': 'Thought Leader',
+            city: 'City/Infra',
+            tech: 'Tech',
+            media: 'Media',
+            artist: 'Artist',
+            student: 'Student',
+            activist: 'Activist',
+            researcher: 'Researcher',
+            business: 'Business'
+        };
+
+        const WHO_COLORS = {
+            designer: '#0088FF',
+            'thought-leader': '#FF0088',
+            city: '#FF8800',
+            tech: '#8800FF',
+            media: '#00BBBB',
+            artist: '#DDAA00',
+            student: '#66BB22',
+            activist: '#EE4444',
+            researcher: '#6688AA',
+            business: '#44AA88'
+        };
+
+        const SWITCHES = {
+            physical: [
+                {
+                    id: 'cafe',
+                    name: 'Circular Café',
+                    shortDesc: 'Daily ritual awareness',
+                    tags: ['ritual', 'temple'],
+                    who: ['designer', 'business'],
+                    whoLabels: ['Designer', 'Café Owner'],
+                    status: 'new',
+                    desc: 'Coffee grounds → mushroom substrate → biochar. Community hub but risks $7 latte gentrifier magnet.',
+                    carbon: 1200, believers: 800, displacement: 25, joy: 35, burden: -5
+                },
+                {
+                    id: 'church',
+                    name: 'Carbon Church',
+                    shortDesc: 'Weekly collective gathering',
+                    tags: ['temple', 'ritual'],
+                    who: ['thought-leader', 'designer'],
+                    whoLabels: ['Spiritual Leader', 'Designer'],
+                    status: 'new',
+                    desc: 'Hempcrete chapel with climate vigils. Spiritual framing builds conviction but may alienate secular audiences.',
+                    carbon: 8500, believers: 2400, displacement: 5, joy: 18, burden: -15
+                },
+                {
+                    id: 'train-station',
+                    name: 'Bio-Brick Station',
+                    shortDesc: 'Commute scale visibility',
+                    tags: ['temple', 'ritual'],
+                    who: ['city', 'designer'],
+                    whoLabels: ['Transit Designer', 'Designer'],
+                    status: 'new',
+                    desc: 'Carbon-sequestering tiles at 125th St. 50K daily commuters see it. MTA bureaucracy is brutal.',
+                    carbon: 3200, believers: 5500, displacement: 8, joy: 12, burden: -20
+                },
+                {
+                    id: 'housing',
+                    name: 'Carbon Housing',
+                    shortDesc: 'Affordable CLT units',
+                    tags: ['temple'],
+                    who: ['designer', 'city', 'activist'],
+                    whoLabels: ['Architect', 'City Planner', 'Housing Activist'],
+                    status: 'new',
+                    desc: '50 affordable units in hempcrete and CLT at 60% AMI. Long approval, NIMBYs fight density.',
+                    carbon: 18000, believers: 3200, displacement: -25, joy: 15, burden: -20
+                },
+                {
+                    id: 'museum',
+                    name: 'Museum of Carbon',
+                    shortDesc: 'Cathedral archive',
+                    tags: ['temple'],
+                    who: ['designer', 'artist', 'researcher', 'city', 'business'],
+                    whoLabels: ['Architect', 'Curator', 'Researcher', 'City Planner', 'Museum Director'],
+                    status: 'new',
+                    desc: 'Biomaterial archive and education. Cultural anchor but tourism pressure, rising rents.',
+                    carbon: 20000, believers: 12000, displacement: 45, joy: 40, burden: -10
+                },
+                {
+                    id: 'foundry',
+                    name: 'Material Foundry',
+                    shortDesc: 'Local manufacturing',
+                    tags: ['temple'],
+                    who: ['designer', 'business', 'researcher'],
+                    whoLabels: ['Architect', 'Factory Owner', 'Materials Scientist'],
+                    status: 'new',
+                    desc: 'Mycelium/hempcrete factory. Union jobs but industrial zoning fights, noise complaints.',
+                    carbon: 15000, believers: 1200, displacement: -10, joy: 8, burden: -25
+                },
+                {
+                    id: 'school',
+                    name: 'Carbon School',
+                    shortDesc: 'Living material labs',
+                    tags: ['temple', 'ritual'],
+                    who: ['city', 'designer', 'researcher'],
+                    whoLabels: ['City Planner', 'Architect', 'Educator'],
+                    status: 'new',
+                    desc: 'K-8 with hands-on biomaterial curriculum. 10+ year payoff. DOE approval hell.',
+                    carbon: 4500, believers: 3200, displacement: -5, joy: 22, burden: -8
+                },
+                {
+                    id: 'park',
+                    name: 'Biochar Park',
+                    shortDesc: 'Carbon-sequestering soil',
+                    tags: ['temple'],
+                    who: ['city', 'designer'],
+                    whoLabels: ['City Planner', 'Landscape Architect'],
+                    status: 'new',
+                    desc: 'Public green space with amended soil. Free, accessible. Maintenance costs pile up.',
+                    carbon: 2800, believers: 1800, displacement: 15, joy: 30, burden: -5
+                },
+                {
+                    id: 'pavilion',
+                    name: 'Mycelium Pavilion',
+                    shortDesc: 'Temporary installation',
+                    tags: ['temple', 'ritual'],
+                    who: ['artist', 'designer', 'researcher'],
+                    whoLabels: ['Installation Artist', 'Designer', 'Materials Scientist'],
+                    status: 'existing',
+                    desc: 'Grown from mushroom roots. The Living + Ecovative have done versions. Decomposes in months.',
+                    carbon: 400, believers: 2200, displacement: 5, joy: 48, burden: 0
+                },
+                {
+                    id: 'repair-cafe',
+                    name: 'Repair Café',
+                    shortDesc: 'Fix-it culture hub',
+                    tags: ['temple', 'ritual'],
+                    who: ['designer', 'business', 'activist'],
+                    whoLabels: ['Designer', 'Shop Owner', 'Organizer'],
+                    status: 'existing',
+                    desc: 'Tool library + volunteer repair sessions. Anti-consumption ethos. Volunteer burnout is real.',
+                    carbon: 300, believers: 950, displacement: -5, joy: 40, burden: -10
+                },
+                {
+                    id: 'material-library',
+                    name: 'Biomaterial Library',
+                    shortDesc: 'Touchable samples',
+                    tags: ['temple', 'tool'],
+                    who: ['designer', 'researcher'],
+                    whoLabels: ['Architect', 'Materials Scientist'],
+                    status: 'new',
+                    desc: 'Physical samples architects can spec from. Niche audience but high-quality converts who actually build.',
+                    carbon: 200, believers: 400, displacement: 0, joy: 15, burden: -12
+                }
+            ],
+            digital: [
+                {
+                    id: 'carbon-city',
+                    name: 'Carbon City',
+                    shortDesc: 'Stakeholder negotiation game',
+                    tags: ['tool'],
+                    who: ['tech', 'designer'],
+                    whoLabels: ['Game Developer', 'Designer'],
+                    status: 'new',
+                    desc: 'Board game / digital sim for carbon development. Deep systems learning.',
+                    carbon: 100, believers: 2800, displacement: 0, joy: 32, burden: -12
+                },
+                {
+                    id: 'carbon-pulse',
+                    name: 'Carbon Pulse',
+                    shortDesc: 'Building ratings app',
+                    tags: ['tool'],
+                    who: ['tech', 'activist'],
+                    whoLabels: ['App Developer', 'Organizer'],
+                    status: 'new',
+                    desc: 'Rate buildings by carbon. Accountability tool but risks harassment of small businesses.',
+                    carbon: 400, believers: 8000, displacement: 2, joy: 28, burden: -35
+                },
+                {
+                    id: 'bmti',
+                    name: 'BMTI Test',
+                    shortDesc: 'Material personality quiz',
+                    tags: ['ritual', 'tool'],
+                    who: ['tech', 'designer'],
+                    whoLabels: ['App Developer', 'Designer'],
+                    status: 'new',
+                    desc: 'Which biomaterial are you? Viral quiz format. High shares, shallow engagement.',
+                    carbon: 50, believers: 1500, displacement: 0, joy: 45, burden: 5
+                },
+                {
+                    id: 'buildings-breathe',
+                    name: 'How Buildings Breathe',
+                    shortDesc: 'Material swap visualizer',
+                    tags: ['tool'],
+                    who: ['designer', 'tech', 'researcher'],
+                    whoLabels: ['Architect', 'App Developer', 'Researcher'],
+                    status: 'new',
+                    desc: 'Swap materials, see carbon flow. Educational but niche audience.',
+                    carbon: 80, believers: 600, displacement: 0, joy: 15, burden: -8
+                },
+                {
+                    id: 'carbon-map',
+                    name: 'Harlem Carbon Map',
+                    shortDesc: 'Building emissions data',
+                    tags: ['tool'],
+                    who: ['student', 'tech', 'researcher'],
+                    whoLabels: ['Student Researcher', 'Data Journalist', 'Researcher'],
+                    status: 'new',
+                    desc: 'Interactive map of building emissions. Data journalism. Landlords hate it.',
+                    carbon: 100, believers: 1800, displacement: -5, joy: 22, burden: -28
+                },
+                {
+                    id: 'tiktok',
+                    name: 'Carbon TikTok',
+                    shortDesc: '60-second explainers',
+                    tags: ['tool', 'ritual'],
+                    who: ['student', 'media'],
+                    whoLabels: ['Student Creator', 'Content Creator'],
+                    status: 'existing',
+                    desc: 'Climate TikTok already exists. High reach, low retention.',
+                    carbon: 30, believers: 4500, displacement: 0, joy: 52, burden: 8
+                },
+                {
+                    id: 'newsletter',
+                    name: 'Carbon Chronicle',
+                    shortDesc: 'Weekly newsletter',
+                    tags: ['ritual'],
+                    who: ['media', 'researcher'],
+                    whoLabels: ['Newsletter Editor', 'Researcher'],
+                    status: 'new',
+                    desc: 'Local climate newsletter. Builds informed base slowly.',
+                    carbon: 20, believers: 1200, displacement: 0, joy: 12, burden: -5
+                },
+                {
+                    id: 'calculator',
+                    name: 'Tally / EC3',
+                    shortDesc: 'Industry carbon tools',
+                    tags: ['tool'],
+                    who: ['designer', 'researcher'],
+                    whoLabels: ['Architect', 'Researcher'],
+                    status: 'existing',
+                    desc: 'Existing LCA tools. Technically precise but zero fun. Only architects use them.',
+                    carbon: 150, believers: 200, displacement: 0, joy: 2, burden: -5
+                },
+                {
+                    id: 'dating',
+                    name: 'Carbon Dating',
+                    shortDesc: 'Match by footprint',
+                    tags: ['tool', 'ritual'],
+                    who: ['tech'],
+                    whoLabels: ['App Developer'],
+                    status: 'new',
+                    desc: 'Gimmick dating app. Gets press. Questionable ethics.',
+                    carbon: 10, believers: 800, displacement: 0, joy: 55, burden: 15
+                },
+                {
+                    id: 'landlord-board',
+                    name: 'Landlord Leaderboard',
+                    shortDesc: 'Public emissions ranking',
+                    tags: ['tool'],
+                    who: ['tech', 'activist', 'media'],
+                    whoLabels: ['App Developer', 'Housing Activist', 'Data Journalist'],
+                    status: 'new',
+                    desc: 'Name and shame worst landlords by building emissions. High drama, legal threats, accountability.',
+                    carbon: 50, believers: 2800, displacement: -8, joy: 45, burden: -40
+                },
+                {
+                    id: 'carbon-label',
+                    name: 'Carbon Label Generator',
+                    shortDesc: 'QR codes for products',
+                    tags: ['tool'],
+                    who: ['tech', 'business'],
+                    whoLabels: ['App Developer', 'Business Owner'],
+                    status: 'new',
+                    desc: 'Scannable labels showing embodied carbon. Like nutrition facts. Greenwashing risk if unverified.',
+                    carbon: 80, believers: 1100, displacement: 0, joy: 18, burden: -15
+                },
+                {
+                    id: 'open-db',
+                    name: 'Open Material DB',
+                    shortDesc: 'Free carbon data',
+                    tags: ['tool'],
+                    who: ['researcher', 'tech', 'designer'],
+                    whoLabels: ['Researcher', 'Software Engineer', 'Architect'],
+                    status: 'new',
+                    desc: 'Open source database of material carbon data. Like EC3 but actually usable. Boring but foundational.',
+                    carbon: 120, believers: 350, displacement: 0, joy: 5, burden: -18
+                }
+            ],
+            activities: [
+                {
+                    id: 'adopt-brick',
+                    name: 'Adopt a Brick',
+                    shortDesc: 'Own a carbon unit',
+                    tags: ['ritual'],
+                    who: ['activist', 'designer'],
+                    whoLabels: ['Organizer', 'Designer'],
+                    status: 'new',
+                    desc: 'Crowdfund bricks, name engraved. Personal stake but favors wealthy.',
+                    carbon: 800, believers: 1800, displacement: 8, joy: 30, burden: 15
+                },
+                {
+                    id: 'membership',
+                    name: 'Carbon Capital Club',
+                    shortDesc: 'Join a collective',
+                    tags: ['ritual'],
+                    who: ['activist', 'business'],
+                    whoLabels: ['Organizer', 'Business Owner'],
+                    status: 'new',
+                    desc: 'Membership with discounts at carbon-negative businesses.',
+                    carbon: 400, believers: 2200, displacement: 12, joy: 20, burden: 8
+                },
+                {
+                    id: 'fashion-week',
+                    name: 'Bio Fashion Week',
+                    shortDesc: 'Algae foam runway',
+                    tags: ['ritual', 'temple'],
+                    who: ['artist', 'designer', 'business', 'media'],
+                    whoLabels: ['Fashion Designer', 'Designer', 'Business Owner', 'Fashion Journalist'],
+                    status: 'existing',
+                    desc: 'Stella McCartney, Bolt Threads already doing this. High visibility but corps get the PR while consumers are told to "buy sustainable."',
+                    carbon: 300, believers: 6500, displacement: 18, joy: 50, burden: 25
+                },
+                {
+                    id: 'confessions',
+                    name: 'Carbon Confessions',
+                    shortDesc: 'Weekly sin absolution',
+                    tags: ['ritual'],
+                    who: ['thought-leader'],
+                    whoLabels: ['Spiritual Leader'],
+                    status: 'new',
+                    desc: 'Confess carbon sins at Carbon Church. Cathartic, TikTok-able.',
+                    carbon: 50, believers: 1200, displacement: 0, joy: 42, burden: 10
+                },
+                {
+                    id: 'maker-saturdays',
+                    name: 'Maker Saturdays',
+                    shortDesc: 'Grow your own mycelium',
+                    tags: ['ritual'],
+                    who: ['designer', 'researcher'],
+                    whoLabels: ['Designer', 'Materials Scientist'],
+                    status: 'new',
+                    desc: 'Hands-on workshop. Deep converts but only 20 per session.',
+                    carbon: 600, believers: 900, displacement: -3, joy: 38, burden: -5
+                },
+                {
+                    id: 'walking-tour',
+                    name: 'Carbon Walking Tour',
+                    shortDesc: 'Guided 125th St tour',
+                    tags: ['ritual'],
+                    who: ['thought-leader', 'student'],
+                    whoLabels: ['Spiritual Leader', 'Student Guide'],
+                    status: 'new',
+                    desc: 'Educational walking tour. Slow scale—max 15 per tour.',
+                    carbon: 20, believers: 400, displacement: 5, joy: 25, burden: -2
+                },
+                {
+                    id: 'block-party',
+                    name: 'Carbon Block Party',
+                    shortDesc: 'Street festival',
+                    tags: ['ritual'],
+                    who: ['activist', 'artist', 'business'],
+                    whoLabels: ['Organizer', 'Artist', 'Business Owner'],
+                    status: 'new',
+                    desc: 'Free food, music, demos. Huge turnout, one-day spike.',
+                    carbon: 100, believers: 3500, displacement: 2, joy: 55, burden: 0
+                },
+                {
+                    id: 'youth-corps',
+                    name: 'Carbon Youth Corps',
+                    shortDesc: 'Paid teen jobs',
+                    tags: ['ritual'],
+                    who: ['activist', 'city'],
+                    whoLabels: ['Organizer', 'City Planner'],
+                    status: 'new',
+                    desc: 'Summer jobs in biomaterial production. Skills + income.',
+                    carbon: 2000, believers: 1800, displacement: -15, joy: 28, burden: -18
+                },
+                {
+                    id: 'documentary',
+                    name: 'Documentary',
+                    shortDesc: 'Feature film',
+                    tags: ['tool'],
+                    who: ['media', 'artist'],
+                    whoLabels: ['Filmmaker', 'Artist'],
+                    status: 'new',
+                    desc: 'Feature doc on Harlem carbon movement. 18-month timeline.',
+                    carbon: 50, believers: 5000, displacement: 5, joy: 35, burden: -8
+                },
+                {
+                    id: 'mural',
+                    name: 'Carbon Mural',
+                    shortDesc: 'Sequestering paint',
+                    tags: ['temple', 'ritual'],
+                    who: ['artist'],
+                    whoLabels: ['Muralist'],
+                    status: 'existing',
+                    desc: 'Airlite and similar paints exist. Beautiful but marginal impact.',
+                    carbon: 150, believers: 1500, displacement: 12, joy: 38, burden: 0
+                },
+                {
+                    id: 'podcast',
+                    name: 'Harlem Carbon Pod',
+                    shortDesc: 'Weekly interviews',
+                    tags: ['ritual'],
+                    who: ['media', 'thought-leader'],
+                    whoLabels: ['Podcaster', 'Thought Leader'],
+                    status: 'new',
+                    desc: 'Local podcast. Builds narrative. 500 listeners/episode.',
+                    carbon: 10, believers: 800, displacement: 0, joy: 18, burden: -3
+                },
+                {
+                    id: 'teach-in',
+                    name: 'Climate Teach-In',
+                    shortDesc: 'Columbia lectures',
+                    tags: ['ritual'],
+                    who: ['student', 'researcher'],
+                    whoLabels: ['Student Organizer', 'Researcher'],
+                    status: 'existing',
+                    desc: 'University teach-ins already happen. Preaching to choir.',
+                    carbon: 30, believers: 600, displacement: 0, joy: 10, burden: -5
+                },
+                {
+                    id: 'conference',
+                    name: 'Sustainability Conference',
+                    shortDesc: 'Annual convening',
+                    tags: ['ritual'],
+                    who: ['researcher', 'business', 'thought-leader', 'designer'],
+                    whoLabels: ['Researcher', 'Business Owner', 'Thought Leader', 'Designer'],
+                    status: 'existing',
+                    desc: 'Greenbuild, AIA conferences exist. Expensive tickets, high travel emissions, and corps sponsor while attendees foot the bill.',
+                    carbon: -200, believers: 3000, displacement: 10, joy: 25, burden: 20
+                },
+                {
+                    id: 'supper-club',
+                    name: 'Carbon Supper Club',
+                    shortDesc: 'Monthly dinners',
+                    tags: ['ritual'],
+                    who: ['business', 'thought-leader'],
+                    whoLabels: ['Entrepreneur', 'Thought Leader'],
+                    status: 'new',
+                    desc: 'Intimate monthly dinners discussing carbon futures. Slow growth, deep believers. Exclusive vibes risk.',
+                    carbon: 20, believers: 600, displacement: 8, joy: 35, burden: 5
+                }
+            ],
+            policies: [
+                {
+                    id: 'll97',
+                    name: 'Local Law 97',
+                    shortDesc: 'Building emissions caps',
+                    tags: ['tool'],
+                    who: ['city'],
+                    whoLabels: ['City Planner'],
+                    status: 'existing',
+                    desc: 'NYC law passed 2019. Real teeth but landlords pass costs to tenants.',
+                    carbon: 25000, believers: 500, displacement: 30, joy: 0, burden: -20
+                },
+                {
+                    id: 'net-zero',
+                    name: 'Corporate Net-Zero',
+                    shortDesc: '2050 pledges',
+                    tags: ['ritual'],
+                    who: ['business', 'media'],
+                    whoLabels: ['Business Owner', 'PR Strategist'],
+                    status: 'existing',
+                    desc: 'Every Fortune 500 has one. PR theater—offsets, not cuts.',
+                    carbon: 500, believers: -200, displacement: 0, joy: -5, burden: 45
+                },
+                {
+                    id: 'carbon-price',
+                    name: 'Carbon Pricing',
+                    shortDesc: 'Tax emissions',
+                    tags: ['tool'],
+                    who: ['city', 'researcher'],
+                    whoLabels: ['City Planner', 'Policy Researcher'],
+                    status: 'existing',
+                    desc: 'Exists in some jurisdictions. Effective but regressive.',
+                    carbon: 18000, believers: 800, displacement: 15, joy: 0, burden: -30
+                },
+                {
+                    id: 'zoning-bonus',
+                    name: 'Bio-Zoning Bonus',
+                    shortDesc: 'Extra FAR for biomaterial',
+                    tags: ['tool'],
+                    who: ['designer', 'city'],
+                    whoLabels: ['Architect', 'City Planner'],
+                    status: 'new',
+                    desc: 'Proposed zoning incentive. Developers will game it.',
+                    carbon: 8000, believers: 300, displacement: 22, joy: 0, burden: -15
+                },
+                {
+                    id: 'land-trust',
+                    name: 'Community Land Trust',
+                    shortDesc: 'Collective ownership',
+                    tags: ['tool', 'ritual'],
+                    who: ['activist', 'city'],
+                    whoLabels: ['Housing Activist', 'City Planner'],
+                    status: 'existing',
+                    desc: 'CLTs exist (Cooper Square, etc). Slow, complex governance.',
+                    carbon: 1000, believers: 1500, displacement: -40, joy: 12, burden: -10
+                },
+                {
+                    id: 'carbon-cap',
+                    name: 'Embodied Carbon Cap',
+                    shortDesc: 'Construction limits',
+                    tags: ['tool'],
+                    who: ['city', 'researcher'],
+                    whoLabels: ['City Planner', 'Policy Researcher'],
+                    status: 'new',
+                    desc: 'Proposed hard limit. Would force industry shift.',
+                    carbon: 22000, believers: 400, displacement: 5, joy: 0, burden: -35
+                },
+                {
+                    id: 'tenant-protect',
+                    name: 'Green Tenant Protection',
+                    shortDesc: 'No green rent hikes',
+                    tags: ['tool'],
+                    who: ['activist', 'city'],
+                    whoLabels: ['Housing Activist', 'City Planner'],
+                    status: 'new',
+                    desc: 'Proposed policy to decouple sustainability from displacement.',
+                    carbon: 500, believers: 2000, displacement: -35, joy: 8, burden: -15
+                },
+                {
+                    id: 'subsidy',
+                    name: 'Biomaterial Subsidy',
+                    shortDesc: 'City covers 30%',
+                    tags: ['tool'],
+                    who: ['city', 'business'],
+                    whoLabels: ['City Planner', 'Business Owner'],
+                    status: 'new',
+                    desc: 'Proposed subsidy program. Budget battles.',
+                    carbon: 12000, believers: 600, displacement: 0, joy: 5, burden: -25
+                },
+                {
+                    id: 'divestment',
+                    name: 'Fossil Divestment',
+                    shortDesc: 'University endowments',
+                    tags: ['ritual'],
+                    who: ['student', 'activist'],
+                    whoLabels: ['Student Organizer', 'Organizer'],
+                    status: 'existing',
+                    desc: 'Divestment movement exists since 2010s. Symbolic but builds energy.',
+                    carbon: 200, believers: 2500, displacement: 0, joy: 25, burden: -8
+                },
+                {
+                    id: 'congestion',
+                    name: 'Congestion Pricing',
+                    shortDesc: 'Drive less, pay more',
+                    tags: ['tool'],
+                    who: ['city'],
+                    whoLabels: ['City Planner'],
+                    status: 'existing',
+                    desc: 'NYC launched 2024. Reduces emissions + funds transit. Regressive without subsidies for low-income.',
+                    carbon: 8000, believers: -500, displacement: 5, joy: -10, burden: 25
+                },
+                {
+                    id: 'right-repair',
+                    name: 'Right to Repair',
+                    shortDesc: 'Fix your own stuff',
+                    tags: ['tool'],
+                    who: ['city', 'business', 'activist'],
+                    whoLabels: ['City Planner', 'Shop Owner', 'Organizer'],
+                    status: 'existing',
+                    desc: 'Laws exist in some states. Extends product life, fights planned obsolescence. Industry lobbies hard against.',
+                    carbon: 1500, believers: 1200, displacement: -3, joy: 20, burden: -12
+                }
+            ]
+        };
+
+        const TIPPING_CARBON = 100000;
+        const TIPPING_BELIEVERS = 50000;
+
+        const state = {
+            active: new Set(),
+            totals: { carbon: 0, believers: 0, displacement: 0, joy: 0, burden: 0 },
+            filters: {
+                who: new Set(['all']),
+                status: new Set(['all'])
+            },
+            tippingReached: false,
+            bannerDismissed: false
+        };
+
+        function createCard(data) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.id = data.id;
+            card.dataset.who = data.who.join(',');
+            card.dataset.status = data.status;
+
+            const tagsHTML = data.tags.map(t => `<span class="tag ${t}">${t}</span>`).join('');
+            const whoDotsHTML = data.who.map(w => `<span class="who-dot ${w}"></span>`).join('');
+            
+            // Expanded info for mobile
+            const whoTagsHTML = data.whoLabels.map((label, i) => 
+                `<span class="expanded-who-tag"><span class="expanded-who-dot" style="background:${WHO_COLORS[data.who[i]]}"></span>${label}</span>`
+            ).join('');
+            
+            const metrics = [
+                { name: 'Carbon', value: data.carbon, invert: false },
+                { name: 'Believers', value: data.believers, invert: false },
+                { name: 'Displacement', value: data.displacement, invert: true },
+                { name: 'Joy', value: data.joy, invert: false },
+                { name: 'Burden', value: data.burden, invert: true }
+            ];
+            
+            const metricsHTML = metrics.map(m => {
+                const sign = m.value > 0 ? '+' : '';
+                const isGood = m.invert ? m.value < 0 : m.value > 0;
+                const isBad = m.invert ? m.value > 0 : m.value < 0;
+                const cls = isGood ? 'pos' : isBad ? 'neg' : '';
+                return `<div class="expanded-metric">
+                    <span>${m.name}</span>
+                    <span class="expanded-metric-value ${cls}">${sign}${m.value}</span>
+                </div>`;
+            }).join('');
+
+            card.innerHTML = `
+                <div class="tags">${tagsHTML}</div>
+                <div class="card-title">${data.name}</div>
+                <div class="card-desc">${data.shortDesc}</div>
+                <div class="who-dots">${whoDotsHTML}</div>
+                <div class="status-indicator ${data.status}">${data.status}</div>
+                <div class="card-expanded-info">
+                    <div class="expanded-desc">${data.desc}</div>
+                    <div class="expanded-metrics">${metricsHTML}</div>
+                    <div class="expanded-who">${whoTagsHTML}</div>
+                </div>
+            `;
+
+            card._data = data;
+            card.addEventListener('click', (e) => handleCardClick(card, data, e));
+            card.addEventListener('mouseenter', (e) => showTooltip(card, data, e));
+            card.addEventListener('mouseleave', hideTooltip);
+
+            return card;
+        }
+        
+        function handleCardClick(card, data, e) {
+            if (card.classList.contains('filtered')) return;
+            
+            const isMobile = window.matchMedia('(orientation: portrait)').matches;
+            
+            // On mobile, open detail overlay
+            if (isMobile) {
+                openMobileDetail(card, data);
+                return;
+            }
+            
+            // Desktop: direct toggle
+            toggleCard(card, data);
+        }
+        
+        let currentDetailCard = null;
+        let currentDetailData = null;
+        
+        function openMobileDetail(card, data) {
+            currentDetailCard = card;
+            currentDetailData = data;
+            
+            const overlay = document.getElementById('mobile-detail-overlay');
+            const frame = document.querySelector('.frame');
+            
+            // Populate detail
+            document.getElementById('detail-title').textContent = data.name;
+            
+            const statusEl = document.getElementById('detail-status');
+            statusEl.textContent = data.status;
+            statusEl.className = 'detail-status ' + data.status;
+            
+            document.getElementById('detail-tags').innerHTML = data.tags.map(t => 
+                `<span class="detail-tag ${t}">${t}</span>`
+            ).join('');
+            
+            document.getElementById('detail-desc').textContent = data.desc;
+            
+            const metrics = [
+                { name: 'Carbon', value: data.carbon, invert: false },
+                { name: 'Believers', value: data.believers, invert: false },
+                { name: 'Displacement', value: data.displacement, invert: true },
+                { name: 'Joy', value: data.joy, invert: false },
+                { name: 'Burden', value: data.burden, invert: true }
+            ];
+            
+            document.getElementById('detail-metrics').innerHTML = metrics.map(m => {
+                const sign = m.value > 0 ? '+' : '';
+                const isGood = m.invert ? m.value < 0 : m.value > 0;
+                const isBad = m.invert ? m.value > 0 : m.value < 0;
+                const cls = isGood ? 'pos' : isBad ? 'neg' : '';
+                return `<div class="detail-metric">
+                    <span class="detail-metric-name">${m.name}</span>
+                    <span class="detail-metric-value ${cls}">${sign}${m.value}</span>
+                </div>`;
+            }).join('');
+            
+            document.getElementById('detail-who-tags').innerHTML = data.whoLabels.map((label, i) => 
+                `<span class="detail-who-tag"><span class="detail-who-dot" style="background:${WHO_COLORS[data.who[i]]}"></span>${label}</span>`
+            ).join('');
+            
+            // Add links for specific projects
+            const linkContainer = document.getElementById('detail-link-container');
+            if (data.id === 'carbon-pulse') {
+                linkContainer.innerHTML = `<div class="detail-link">Check it out → <a href="https://kelseydoubleu.github.io/CarbonTemples/" target="_blank">Try Carbon Pulse</a></div>`;
+            } else if (data.id === 'bmti') {
+                linkContainer.innerHTML = `<div class="detail-link">What's your type? → <a href="https://kelseydoubleu.github.io/bmti/" target="_blank">Take the BMTI</a></div>`;
+            } else {
+                linkContainer.innerHTML = '';
+            }
+            
+            // Update action button based on current state
+            updateDetailActionButton();
+            
+            // Show overlay
+            overlay.classList.add('show');
+            frame.classList.add('overlay-open');
+        }
+        
+        function updateDetailActionButton() {
+            const actionBtn = document.getElementById('detail-action');
+            const isActive = currentDetailCard && currentDetailCard.classList.contains('active');
+            
+            if (isActive) {
+                actionBtn.textContent = 'Remove from Coalition';
+                actionBtn.className = 'detail-btn detail-btn-remove';
+            } else {
+                actionBtn.textContent = 'Add to Coalition';
+                actionBtn.className = 'detail-btn detail-btn-add';
+            }
+        }
+        
+        function closeMobileDetail() {
+            const overlay = document.getElementById('mobile-detail-overlay');
+            const frame = document.querySelector('.frame');
+            
+            overlay.classList.remove('show');
+            frame.classList.remove('overlay-open');
+            
+            currentDetailCard = null;
+            currentDetailData = null;
+        }
+        
+        function handleDetailAction() {
+            if (currentDetailCard && currentDetailData) {
+                toggleCard(currentDetailCard, currentDetailData);
+                closeMobileDetail();
+            }
+        }
+
+        function toggleCard(card, data) {
+            if (card.classList.contains('filtered')) return;
+            
+            const isActive = card.classList.contains('active');
+            if (isActive) {
+                card.classList.remove('active');
+                state.active.delete(data.id);
+                state.totals.carbon -= data.carbon;
+                state.totals.believers -= data.believers;
+                state.totals.displacement -= data.displacement;
+                state.totals.joy -= data.joy;
+                state.totals.burden -= data.burden;
+            } else {
+                card.classList.add('active');
+                state.active.add(data.id);
+                state.totals.carbon += data.carbon;
+                state.totals.believers += data.believers;
+                state.totals.displacement += data.displacement;
+                state.totals.joy += data.joy;
+                state.totals.burden += data.burden;
+            }
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const { carbon, believers, displacement, joy, burden } = state.totals;
+
+            const fmt = (v) => v >= 1000 ? (v/1000).toFixed(1) + 'K' : v;
+
+            const carbonEl = document.getElementById('m-carbon');
+            carbonEl.textContent = fmt(carbon);
+            carbonEl.className = 'metric-value ' + (carbon > 0 ? 'positive' : 'neutral');
+
+            const believersEl = document.getElementById('m-believers');
+            believersEl.textContent = fmt(believers);
+            believersEl.className = 'metric-value ' + (believers > 0 ? 'positive' : believers < 0 ? 'negative' : 'neutral');
+
+            const dispEl = document.getElementById('m-displacement');
+            dispEl.textContent = (displacement > 0 ? '+' : '') + displacement;
+            dispEl.className = 'metric-value ' + (displacement > 30 ? 'negative' : displacement > 15 ? 'warning' : displacement < 0 ? 'positive' : 'neutral');
+
+            const joyEl = document.getElementById('m-joy');
+            joyEl.textContent = joy;
+            joyEl.className = 'metric-value ' + (joy > 50 ? 'positive' : 'neutral');
+
+            const burdenEl = document.getElementById('m-burden');
+            burdenEl.textContent = (burden > 0 ? '+' : '') + burden;
+            burdenEl.className = 'metric-value ' + (burden > 15 ? 'negative' : burden < -15 ? 'positive' : 'neutral');
+            
+            // Update mobile secondary metrics
+            const dispMobile = document.getElementById('m-displacement-mobile');
+            if (dispMobile) {
+                dispMobile.textContent = (displacement > 0 ? '+' : '') + displacement;
+                dispMobile.className = 'secondary-metric-value ' + (displacement > 30 ? 'negative' : displacement > 15 ? 'warning' : displacement < 0 ? 'positive' : 'neutral');
+            }
+            
+            const joyMobile = document.getElementById('m-joy-mobile');
+            if (joyMobile) {
+                joyMobile.textContent = joy;
+                joyMobile.className = 'secondary-metric-value ' + (joy > 50 ? 'positive' : 'neutral');
+            }
+            
+            const burdenMobile = document.getElementById('m-burden-mobile');
+            if (burdenMobile) {
+                burdenMobile.textContent = (burden > 0 ? '+' : '') + burden;
+                burdenMobile.className = 'secondary-metric-value ' + (burden > 15 ? 'negative' : burden < -15 ? 'positive' : 'neutral');
+            }
+
+            const carbonProgress = Math.min(1, carbon / TIPPING_CARBON);
+            const believerProgress = Math.min(1, Math.max(0, believers) / TIPPING_BELIEVERS);
+            const totalProgress = carbonProgress * 0.5 + believerProgress * 0.5;
+            const percent = Math.round(totalProgress * 100);
+
+            const circumference = 100.5;
+            const offset = circumference - (percent / 100) * circumference;
+
+            document.getElementById('tipping-progress').style.strokeDashoffset = offset;
+            document.getElementById('tipping-percent').textContent = percent + '%';
+
+            const ring = document.getElementById('tipping-ring');
+            ring.classList.toggle('reached', percent >= 100);
+
+            // Check for tipping point
+            if (percent >= 100 && !state.tippingReached && !state.bannerDismissed) {
+                state.tippingReached = true;
+                generateWrappedSummary();
+                document.getElementById('tipping-banner').classList.add('show');
+            } else if (percent < 100) {
+                state.tippingReached = false;
+            }
+            
+            // Update mobile selection bar
+            updateMobileSelectionBar();
+        }
+        
+        function updateMobileSelectionBar() {
+            const bar = document.getElementById('mobile-selection-bar');
+            const clearBtn = document.getElementById('mobile-clear-btn');
+            if (!bar) return;
+            
+            const allSwitches = [...SWITCHES.physical, ...SWITCHES.digital, ...SWITCHES.activities, ...SWITCHES.policies];
+            const activeCards = allSwitches.filter(s => state.active.has(s.id));
+            
+            // Toggle clear button visibility
+            if (clearBtn) {
+                if (activeCards.length > 0) {
+                    clearBtn.classList.add('show');
+                } else {
+                    clearBtn.classList.remove('show');
+                }
+            }
+            
+            if (activeCards.length === 0) {
+                bar.innerHTML = '';
+                return;
+            }
+            
+            bar.innerHTML = activeCards.map(card => `
+                <div class="selection-chip" data-id="${card.id}">
+                    ${card.name}
+                    <span class="remove" onclick="removeSelection('${card.id}')">×</span>
+                </div>
+            `).join('');
+        }
+        
+        function removeSelection(id) {
+            const card = document.querySelector(`.card[data-id="${id}"]`);
+            const allSwitches = [...SWITCHES.physical, ...SWITCHES.digital, ...SWITCHES.activities, ...SWITCHES.policies];
+            const data = allSwitches.find(s => s.id === id);
+            
+            if (card && data) {
+                card.classList.remove('active');
+                state.active.delete(id);
+                state.totals.carbon -= data.carbon;
+                state.totals.believers -= data.believers;
+                state.totals.displacement -= data.displacement;
+                state.totals.joy -= data.joy;
+                state.totals.burden -= data.burden;
+                updateDisplay();
+            }
+        }
+
+        function generateWrappedSummary() {
+            // Get all active cards data
+            const allSwitches = [...SWITCHES.physical, ...SWITCHES.digital, ...SWITCHES.activities, ...SWITCHES.policies];
+            const activeCards = allSwitches.filter(s => state.active.has(s.id));
+            
+            // Count temples, tools, rituals
+            let temples = 0, tools = 0, rituals = 0;
+            activeCards.forEach(card => {
+                if (card.tags.includes('temple')) temples++;
+                if (card.tags.includes('tool')) tools++;
+                if (card.tags.includes('ritual')) rituals++;
+            });
+            
+            // Format metrics
+            const fmt = (v) => v >= 1000 ? (v/1000).toFixed(1) + 'K' : v;
+            const { carbon, believers, displacement, burden } = state.totals;
+            
+            // Build category narratives - find dominant WHO per category with their projects
+            const getCategoryNarrative = (category, verb) => {
+                const catCards = SWITCHES[category].filter(s => state.active.has(s.id));
+                if (catCards.length === 0) return '';
+                
+                // Count WHO occurrences to find dominant
+                const whoCounts = {};
+                catCards.forEach(card => {
+                    const whoKey = card.who[0];
+                    const whoLabel = card.whoLabels[0];
+                    if (!whoCounts[whoKey]) {
+                        whoCounts[whoKey] = { label: whoLabel, color: WHO_COLORS[whoKey], cards: [] };
+                    }
+                    whoCounts[whoKey].cards.push(card.name);
+                });
+                
+                // Get the dominant WHO (most cards)
+                const dominant = Object.values(whoCounts).sort((a, b) => b.cards.length - a.cards.length)[0];
+                
+                // Get top 3 projects from dominant WHO
+                const projects = dominant.cards.slice(0, 3).map(name => `<strong>${name}</strong>`);
+                const projectList = projects.length > 1 
+                    ? projects.slice(0, -1).join(', ') + ' and ' + projects.slice(-1)
+                    : projects[0];
+                
+                return `<span style="color:${dominant.color}">${dominant.label}s</span> ${verb} ${projectList}. `;
+            };
+            
+            let categoryNarrative = '';
+            categoryNarrative += getCategoryNarrative('physical', 'built');
+            categoryNarrative += getCategoryNarrative('digital', 'launched');
+            categoryNarrative += getCategoryNarrative('activities', 'led');
+            categoryNarrative += getCategoryNarrative('policies', 'passed');
+            
+            // Displacement text
+            let dispText = '';
+            if (displacement < -10) {
+                dispText = `with <span class="metric-good">displacement reduced to ${displacement}</span>`;
+            } else if (displacement > 20) {
+                dispText = `but <span class="metric-bad">displacement rose to +${displacement}</span>. Watch the gentrification`;
+            } else {
+                dispText = `with displacement at <span class="metric-warn">${displacement > 0 ? '+' : ''}${displacement}</span>`;
+            }
+            
+            // Burden text
+            let burdenText = '';
+            if (burden < -30) {
+                burdenText = `The burden shifted firmly to institutions where it belongs.`;
+            } else if (burden > 20) {
+                burdenText = `<span class="metric-bad">Warning: individuals are still carrying too much of the burden (+${burden}).</span>`;
+            } else {
+                burdenText = `The burden is shifting. Keep pushing it toward institutions.`;
+            }
+            
+            // Build summary
+            const summary = `
+                Your coalition tipped the culture with 
+                <span class="type-temple">${temples} temple${temples !== 1 ? 's' : ''}</span>, 
+                <span class="type-tool">${tools} tool${tools !== 1 ? 's' : ''}</span>, and 
+                <span class="type-ritual">${rituals} ritual${rituals !== 1 ? 's' : ''}</span>.
+                <br><br>
+                ${categoryNarrative}
+                <br><br>
+                You sequestered <span class="metric-good">${fmt(carbon)} tonnes</span> of carbon and converted 
+                <span class="metric-good">${fmt(believers)} believers</span>, ${dispText}.
+                <br><br>
+                ${burdenText}
+            `;
+            
+            document.getElementById('wrapped-summary').innerHTML = summary;
+        }
+
+        function resetAll() {
+            document.querySelectorAll('.card.active').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            state.active.clear();
+            state.totals = { carbon: 0, believers: 0, displacement: 0, joy: 0, burden: 0 };
+            state.tippingReached = false;
+            state.bannerDismissed = false;
+            
+            document.getElementById('tipping-banner').classList.remove('show');
+            
+            updateDisplay();
+        }
+
+        function applyFilters() {
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const cardWhos = card.dataset.who.split(',');
+                const whoMatch = state.filters.who.has('all') || cardWhos.some(w => state.filters.who.has(w));
+                const statusMatch = state.filters.status.has('all') || state.filters.status.has(card.dataset.status);
+                
+                if (whoMatch && statusMatch) {
+                    card.classList.remove('filtered');
+                } else {
+                    card.classList.add('filtered');
+                }
+            });
+        }
+
+        function setupFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const filterType = btn.dataset.type;
+                    const filterValue = btn.dataset.filter;
+                    
+                    if (filterValue === 'all') {
+                        state.filters[filterType] = new Set(['all']);
+                        document.querySelectorAll(`.filter-btn[data-type="${filterType}"]`).forEach(b => {
+                            b.classList.toggle('active', b.dataset.filter === 'all');
+                        });
+                    } else {
+                        state.filters[filterType].delete('all');
+                        document.querySelector(`.filter-btn[data-type="${filterType}"][data-filter="all"]`).classList.remove('active');
+                        
+                        if (state.filters[filterType].has(filterValue)) {
+                            state.filters[filterType].delete(filterValue);
+                            btn.classList.remove('active');
+                        } else {
+                            state.filters[filterType].add(filterValue);
+                            btn.classList.add('active');
+                        }
+                        
+                        if (state.filters[filterType].size === 0) {
+                            state.filters[filterType].add('all');
+                            document.querySelector(`.filter-btn[data-type="${filterType}"][data-filter="all"]`).classList.add('active');
+                        }
+                    }
+                    
+                    applyFilters();
+                });
+            });
+        }
+
+        const tooltip = document.getElementById('tooltip');
+
+        function showTooltip(card, data, e) {
+            if (card.classList.contains('filtered')) return;
+            
+            document.getElementById('tooltip-title').textContent = data.name;
+            
+            const whoHTML = data.whoLabels.map((label, i) => 
+                `<span class="tooltip-who-item"><span class="tooltip-who-dot" style="background:${WHO_COLORS[data.who[i]]}"></span>${label}</span>`
+            ).join('') + ` · ${data.tags.map(t => t.toUpperCase()).join(' + ')} · ${data.status.toUpperCase()}`;
+            document.getElementById('tooltip-who').innerHTML = whoHTML;
+            
+            document.getElementById('tooltip-desc').textContent = data.desc;
+
+            const metrics = [
+                { name: 'Carbon', value: data.carbon, invert: false },
+                { name: 'Believers', value: data.believers, invert: false },
+                { name: 'Displacement', value: data.displacement, invert: true },
+                { name: 'Joy', value: data.joy, invert: false },
+                { name: 'Burden', value: data.burden, invert: true }
+            ];
+
+            document.getElementById('tooltip-metrics').innerHTML = metrics.map(m => {
+                const sign = m.value > 0 ? '+' : '';
+                const isGood = m.invert ? m.value < 0 : m.value > 0;
+                const isBad = m.invert ? m.value > 0 : m.value < 0;
+                const cls = isGood ? 'pos' : isBad ? 'neg' : '';
+                return `<div class="tooltip-metric">
+                    <span class="tooltip-metric-name">${m.name}</span>
+                    <span class="tooltip-metric-value ${cls}">${sign}${m.value}</span>
+                </div>`;
+            }).join('');
+
+            const rect = card.getBoundingClientRect();
+            let left = rect.right + 8;
+            let top = rect.top;
+
+            if (left + 240 > window.innerWidth) left = rect.left - 248;
+            if (top + 180 > window.innerHeight) top = window.innerHeight - 190;
+            if (top < 10) top = 10;
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.add('visible');
+        }
+
+        function hideTooltip() {
+            tooltip.classList.remove('visible');
+        }
+
+        function init() {
+            Object.entries(SWITCHES).forEach(([category, items]) => {
+                const container = document.getElementById(`switches-${category}`);
+                items.forEach(item => container.appendChild(createCard(item)));
+            });
+            
+            setupFilters();
+            
+            document.getElementById('reset-btn').addEventListener('click', resetAll);
+            
+            document.getElementById('banner-close').addEventListener('click', () => {
+                document.getElementById('tipping-banner').classList.remove('show');
+                state.bannerDismissed = true;
+            });
+            
+            // Mobile detail overlay buttons
+            document.getElementById('detail-close').addEventListener('click', closeMobileDetail);
+            document.getElementById('detail-action').addEventListener('click', handleDetailAction);
+            
+            // Mobile clear selection button
+            document.getElementById('mobile-clear-btn').addEventListener('click', resetAll);
+            
+            // Mobile metrics expand toggle
+            document.getElementById('metrics-expand-toggle').addEventListener('click', () => {
+                const toggle = document.getElementById('metrics-expand-toggle');
+                const metrics = document.getElementById('secondary-metrics');
+                toggle.classList.toggle('open');
+                metrics.classList.toggle('show');
+            });
+            
+            // Mobile filter toggle
+            document.getElementById('mobile-filter-toggle').addEventListener('click', openMobileFilters);
+            document.getElementById('filter-overlay-close').addEventListener('click', closeMobileFilters);
+            document.getElementById('filter-overlay-apply').addEventListener('click', applyMobileFilters);
+            document.getElementById('filter-overlay-clear').addEventListener('click', clearMobileFilters);
+            
+            // Mobile filter button clicks
+            document.querySelectorAll('.mobile-filter-overlay .filter-overlay-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.dataset.type;
+                    const filter = btn.dataset.filter;
+                    const container = btn.parentElement;
+                    
+                    if (filter === 'all') {
+                        container.querySelectorAll('.filter-overlay-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    } else {
+                        container.querySelector('[data-filter="all"]').classList.remove('active');
+                        btn.classList.toggle('active');
+                        
+                        // If nothing selected, re-select All
+                        const anyActive = container.querySelectorAll('.filter-overlay-btn.active:not([data-filter="all"])').length > 0;
+                        if (!anyActive) {
+                            container.querySelector('[data-filter="all"]').classList.add('active');
+                        }
+                    }
+                });
+            });
+            
+            updateDisplay();
+        }
+        
+        function openMobileFilters() {
+            document.getElementById('mobile-filter-overlay').classList.add('show');
+            document.querySelector('.frame').classList.add('overlay-open');
+        }
+        
+        function closeMobileFilters() {
+            document.getElementById('mobile-filter-overlay').classList.remove('show');
+            document.querySelector('.frame').classList.remove('overlay-open');
+        }
+        
+        function applyMobileFilters() {
+            // Get selected WHO filters
+            const whoContainer = document.getElementById('mobile-who-filters');
+            const whoAllActive = whoContainer.querySelector('[data-filter="all"]').classList.contains('active');
+            const activeWhoFilters = Array.from(whoContainer.querySelectorAll('.filter-overlay-btn.active:not([data-filter="all"])')).map(b => b.dataset.filter);
+            
+            // Get selected STATUS filters
+            const statusContainer = document.getElementById('mobile-status-filters');
+            const statusAllActive = statusContainer.querySelector('[data-filter="all"]').classList.contains('active');
+            const activeStatusFilters = Array.from(statusContainer.querySelectorAll('.filter-overlay-btn.active:not([data-filter="all"])')).map(b => b.dataset.filter);
+            
+            // Apply filters to cards
+            document.querySelectorAll('.card').forEach(card => {
+                const cardWho = card.dataset.who.split(',');
+                const cardStatus = card.dataset.status;
+                
+                let whoMatch = whoAllActive || activeWhoFilters.length === 0;
+                if (!whoMatch) {
+                    whoMatch = cardWho.some(w => activeWhoFilters.includes(w));
+                }
+                
+                let statusMatch = statusAllActive || activeStatusFilters.length === 0;
+                if (!statusMatch) {
+                    statusMatch = activeStatusFilters.includes(cardStatus);
+                }
+                
+                if (whoMatch && statusMatch) {
+                    card.classList.remove('filtered');
+                } else {
+                    card.classList.add('filtered');
+                }
+            });
+            
+            // Sync with desktop filters
+            const desktopWhoFilters = document.querySelectorAll('.filter-bar .filter-group .filter-btn[data-type="who"]');
+            const desktopStatusFilters = document.querySelectorAll('.filter-bar .filter-group-center .filter-btn[data-type="status"]');
+            
+            // Reset desktop WHO filters
+            desktopWhoFilters.forEach(btn => btn.classList.remove('active'));
+            if (whoAllActive || activeWhoFilters.length === 0) {
+                document.querySelector('.filter-bar [data-filter="all"][data-type="who"]').classList.add('active');
+            } else {
+                activeWhoFilters.forEach(filter => {
+                    const desktopBtn = document.querySelector(`.filter-bar [data-filter="${filter}"][data-type="who"]`);
+                    if (desktopBtn) desktopBtn.classList.add('active');
+                });
+            }
+            
+            // Reset desktop STATUS filters
+            desktopStatusFilters.forEach(btn => btn.classList.remove('active'));
+            if (statusAllActive || activeStatusFilters.length === 0) {
+                document.querySelector('.filter-bar [data-filter="all"][data-type="status"]').classList.add('active');
+            } else {
+                activeStatusFilters.forEach(filter => {
+                    const desktopBtn = document.querySelector(`.filter-bar [data-filter="${filter}"][data-type="status"]`);
+                    if (desktopBtn) desktopBtn.classList.add('active');
+                });
+            }
+            
+            // Update summary text
+            updateFilterSummary();
+            
+            closeMobileFilters();
+        }
+        
+        function clearMobileFilters() {
+            // Reset mobile filters to All
+            document.querySelectorAll('.mobile-filter-overlay .filter-overlay-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.mobile-filter-overlay [data-filter="all"]').forEach(btn => {
+                btn.classList.add('active');
+            });
+            
+            // Remove filtered class from all cards
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.remove('filtered');
+            });
+            
+            // Update summary
+            updateFilterSummary();
+        }
+        
+        function updateFilterSummary() {
+            const whoContainer = document.getElementById('mobile-who-filters');
+            const statusContainer = document.getElementById('mobile-status-filters');
+            
+            const whoAll = whoContainer.querySelector('[data-filter="all"]').classList.contains('active');
+            const statusAll = statusContainer.querySelector('[data-filter="all"]').classList.contains('active');
+            
+            let summary = '';
+            
+            if (whoAll && statusAll) {
+                summary = 'All';
+            } else {
+                const parts = [];
+                
+                if (!whoAll) {
+                    const activeWho = whoContainer.querySelectorAll('.filter-overlay-btn.active:not([data-filter="all"])');
+                    parts.push(activeWho.length + ' WHO');
+                }
+                
+                if (!statusAll) {
+                    const activeStatus = statusContainer.querySelectorAll('.filter-overlay-btn.active:not([data-filter="all"])');
+                    const statusNames = Array.from(activeStatus).map(b => b.dataset.filter);
+                    parts.push(statusNames.join(', '));
+                }
+                
+                summary = parts.join(' · ') || 'All';
+            }
+            
+            document.getElementById('filter-active-summary').textContent = summary;
+        }
+
+        init();
+    </script>
+</body>
+</html>
